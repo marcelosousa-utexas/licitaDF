@@ -9,23 +9,21 @@
         
          <form action="/store_user_parameter" method = "POST">
           <table id="data" class="table table-striped">
-          <thead>
-            <tr>
-              <th><strong>#</strong></th>
-              {% for classification in classifications %}
-                  <th align="center"><input type="text" placeholder="{{classification}}" name="{{classification}}" class="form-control"/></th>
-              {% endfor %}              
-              </tr>    
-          </thead>
           <tbody>   
             <tr>
-            {% for class_parameter in class_parameters %}
+            {% for class_parameter in class_parameters %}         
               <tr>        
-                <td><strong>{{ loop.index }}</strong></td>
+                <td><strong>Schema Name {{ loop.index }}</strong></td>
                 {% for parameter in class_parameter %}
-                    <td align="center"><input type="text" placeholder="{{parameter}}" name="{{parameter}}" class="form-control"/></td>
+                    <td align="center"><input type="text" placeholder="Schema's name" name="Schema_{{parameter}}" class="form-control"/></td>
                 {% endfor %}
               </tr> 
+              <tr>        
+                <td><strong>Description {{ loop.index }}</strong></td>
+                {% for parameter in class_parameter %}
+                  <td align="center"><textarea class="scroll-box form-control" name="Description_{{parameter}}" id="scroll-box" placeholder = "Your description here" required></textarea>
+                {% endfor %}
+              </tr>                  
             {% endfor %}
              </tr> 
           <!-- <a class="btn btn-primary rounded-0 btn-block" id="insertRow" href="#">Add new row</a>  -->

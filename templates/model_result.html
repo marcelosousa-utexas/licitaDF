@@ -4,24 +4,16 @@
         <table id="data" class="table table-striped">
         <thead>
           <tr>
-            <th>File</th>
-            <th>Page Number</th>
-            <th>Classification </th>
-            <th>Model 1 Prediction</th>
-            <th>Model 1 Alert</th>     
-            <th>Model 2 Prediction</th>
-            <th>Model 2 Alert</th>   
-      </thead>
+              {% for column_name in header %}
+                  <th>{{ column_name }}</th>
+              {% endfor %}  
+        </thead>
         <tbody>
           {% for data in model_result %}
             {% for row in data %}
             <tr>
               {% for cell in row %}
-                {% if loop.index == 3 %}
                   <td>{{ cell }}</td>
-                {% else %}
-                  <td>{{ cell }}</td>
-                {% endif %}
               {% endfor %}
             </tr>
             {% endfor %}

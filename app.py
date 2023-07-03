@@ -38,7 +38,6 @@ from database3 import Database
 class_db = Database()
 #engine = class_db.engine
 
-
 @app.route("/")
 def init():
   return render_template("home.html")
@@ -164,63 +163,31 @@ def store_user_parameter():
   if request.form:
     #data = request.args
     data = request.form
-    #print("parameter_data : ", data)
-    data_matrix = class_par.build_data_matrix(class_par.parameter_name_matrix, data)
-    header = class_par.build_header(class_par.classification_name_list, data)
-    class_par.set_header(header)
-    #print(data_matrix)
-    #print(header)    
-
-
-
-    inverted_data_matrix = [[data_matrix[j][i] for j in range(len(data_matrix))] for i in range(len(data_matrix[0]))]
-    #print(inverted_data_matrix)
-    # lista_elementos_mais_comuns = []
-    # lista_elementos_mais_comuns.append(['danfe','chave','acesso','autenticidade','nf-e','www.nfe.fazenda.gov.br/portal']) #NF
-    # lista_elementos_mais_comuns.append(['NFS-e','verificacao','prestador','tomador','ISS','prefeitura'])  #NFm
-    # lista_elementos_mais_comuns.append(['autorizacao','liquidacao','pagamento','despesa','ordenador','extenso']) #autorizacao e liquidacao da despesa
-    # lista_elementos_mais_comuns.append(['lancamento','evento','especie','contabil','orcamentaria','decreto']) #NL
-    # lista_elementos_mais_comuns.append(['previsao','pagamento','pagadora','referencia','ne', 'domicilio']) #PP
-    # lista_elementos_mais_comuns.append(['pdet090','competencia','ordem','bancaria','bancario','domicilio']) #OB
-    # #lista_elementos_mais_comuns.append([])
-
-    # lista_elementos_mais_comuns = []
-    # lista_elementos_mais_comuns.append(['edital','licitacao','supensao','concurso']) #SEACOMP
-    # lista_elementos_mais_comuns.append(['pessoal','aposentadoria','beneficio','salario'])  #SEFIPE
-    # lista_elementos_mais_comuns.append(['auditoria','fiscalizacao','regularidade','lei']) #SEAUD
-    # lista_elementos_mais_comuns.append(['contas','governo','gestao','fiscal']) #SEMAG
-    # lista_elementos_mais_comuns.append(['contas','tomada','prestacao','regular']) #SECONT    
-    # lista_elementos_mais_comuns.append([])
-
-    # lista_elementos_mais_comuns2 = [[lista_elementos_mais_comuns[j][i] for j in range(len(lista_elementos_mais_comuns))] for i in range(len(lista_elementos_mais_comuns[0]))]
-    # print(lista_elementos_mais_comuns2)
-    # lista_elementos_mais_comuns = []
-    # lista_elementos_mais_comuns.append(['edital','licitacao','supensao','concurso']) #SEACOMP
-    # lista_elementos_mais_comuns.append(['pessoal','aposentadoria','beneficio','salario'])  #SEFIPE
-    # lista_elementos_mais_comuns.append(['auditoria','fiscalizacao','regularidade','lei']) #SEAUD
-    # lista_elementos_mais_comuns.append(['contas','governo','gestao','fiscal']) #SEMAG
-    # lista_elementos_mais_comuns.append(['contas','tomada','prestacao','regular']) #SECONT
-    # lista_elementos_mais_comuns.append([])
+    print("parameter_data : ", data)
+    # data_matrix = class_par.build_data_matrix(class_par.parameter_name_matrix, data)
+    result = {}
+    for key, value in data.items():
+        class_name, param_name = key.split('_class_1_')
+        if param_name not in result:
+            result[param_name] = {}
+        if 'Schema' in key:
+            result[param_name]['Schema'] = value
+        elif 'Description' in key:
+            result[param_name]['Description'] = value
     
-  
-    # class_par.classification_name_list = ['NF','NFm','Aut. e liq.da despesa', 'NL', 'PP', 'OB']
-    # class_par.classification_name_list = ['SEACOMP','SEFIPE', 'SEAUD', 'SEMAG', 'SECONT']
-    
-    # parameter_value_matrix = lista_elementos_mais_comuns
-    
-    #modelname = 'notas_fiscais'
-    #class_user.model_name = modelname
-    #print(class_par.classification_name_list)
-    df = pd.DataFrame(inverted_data_matrix, columns=class_par.get_header())
-    data_matrix.append([])
+    print(result)
+
+    data_matrix = [{'Schema': value['Schema'], 'Description': value['Description']} for value in result.values()]
+
+    print(data_matrix)
+
+    #df = pd.DataFrame(data_matrix)
     class_par.set_data_matrix(data_matrix)
     
-    class_save_model.save_pickle(df, class_user.model_name)
-    class_save_model.build_all_models(class_par.get_data_matrix())
-    class_save_model.save_all(class_user.model_name)
-    
-    #df = class_save_model.load(class_user.model_name)
-    #print(df)
+    class_save_model.save_pickle(data_matrix, class_user.model_name)
+    #class_save_model.build_all_models(class_par.get_data_matrix())
+    #class_save_model.save_all(class_user.model_name)
+
   
     return render_template("upload_file_type.html")   
     #return "teste" 
@@ -280,8 +247,10 @@ def upload_files():
 @app.route('/upload_plain_text', methods=['POST'])
 def upload_plain_text():
     # Get the text from the textarea input
+
     if request.form:
       text = request.form['scroll-box']
+      print(text)
       filename = 'plain_text.txt'
       file_ext = os.path.splitext(filename)[1]
       full_file_path = os.path.join(app.config['UPLOAD_PATH'], filename)
@@ -294,24 +263,35 @@ def upload_plain_text():
       
       # Return a response to the client
       return redirect(url_for('model_result'))
+  
+    # if request.form:
+    #   text = request.form['scroll-box']
+    #   print(text)
+
+    #   question = text
+  
+    #   messages = prompt.format_messages(text=question,
+    #                                     format_instructions=format_instructions)
+    #   question = messages[0].content
+        
+    #   data = asyncio.run(query(question))
+      
+    #   # Return a response to the client
+    #   return redirect(url_for('model_result'))
 
 @app.route('/model_result', methods=['GET','POST'])
 def model_result():
 
+
+  data_schema = class_save_model.load(class_user.model_name)
     
-  class_load_model.load_all_models(class_user.model_name)
 
-  dictionary = class_load_model.dictionary
-  model_TFIDF = class_load_model.model_TFIDF
-  index_TFIDF = class_load_model.index_TFIDF
-  model_LSI =  class_load_model.model_LSI
-  index_LSI = class_load_model.index_LSI
-
-  class_run_model.set_model_parameters(class_user.get_files(), dictionary, model_TFIDF, index_TFIDF, model_LSI, index_LSI)
-  class_run_model.start_classifier_model(class_file_io.get_file_type(), class_file_io.get_single_multiple_class(), class_par.get_header())
+  class_run_model.set_model_parameters(class_user.get_files(), data_schema)
+  class_run_model.start_classifier_model(class_file_io.get_file_type(), class_file_io.get_single_multiple_class())
   model_result = class_run_model.get_model_result()
+  header = class_run_model.get_model_header()
 
-  return render_template("model_result.html", classification=class_par.get_header(), model_result=model_result) 
+  return render_template("model_result.html", header=header, model_result=model_result) 
 
 
 @app.route('/get_csv', methods=['POST'])

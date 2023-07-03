@@ -55,14 +55,14 @@ class file_io():
   def process_plain_text(self):
       print("Processing plain text file...")
       with open(self.file_full_path, encoding="utf8") as txt_file:
-        data = txt_file.read().lower()
+        data = txt_file.read()
       return data    
   
   
   def process_text_file(self):
       print("Processing text file...")
       with open(self.file_full_path, encoding="utf8") as txt_file:
-        data = txt_file.read().lower()
+        data = txt_file.read()
       return data
 
   

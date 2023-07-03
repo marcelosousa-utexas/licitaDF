@@ -39,6 +39,13 @@ class build_model():
 
   def save_pickle(self, object, modelname):
     self.write_to_disk(object, modelname, ".pkl")
+    #write to database
+    disk = disk_access()
+    #class_model = Models()
+    class_db = Database()
+    model = Models(name = modelname, pathLocation = disk.get_model_absolute_path(modelname) , userName = "Marcelo", date = datetime.utcnow())
+    class_db.saveData(model)
+
   
   def save_all(self, modelname):
     self.write_to_disk(self.dictionary, modelname, ".dict")
