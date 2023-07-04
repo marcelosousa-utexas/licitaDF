@@ -62,6 +62,7 @@ def show_model(id):
     class_user.model_name = modelName
     
     df = class_save_model.load(modelName)
+    print("model id ", df)
     column_names = list(df.columns.values.tolist())
     row_data = list(df.values.tolist())
     class_par.set_header(column_names)
@@ -300,35 +301,42 @@ def model_result():
 
   class_run_model.set_model_parameters(class_user.get_files(), data_schema)
   class_run_model.start_classifier_model(class_file_io.get_file_type(), class_file_io.get_single_multiple_class())
-  model_result = class_run_model.get_model_result()
-  header = class_run_model.get_model_header()
-  print(model_result)
-  print(header)
+  df = class_run_model.get_model_result()
+  headers = df.columns.tolist()
+  row_data = list(df.values.tolist())
+  print(row_data)
+  # print(model_result)
+  # print(header)
 
-  df = pd.DataFrame(model_result, columns=header)
-  class_save_model.save_pickle2(df, class_user.model_name)
+  # df = pd.DataFrame(model_result, columns=header)
+  # class_save_model.save_pickle2(df, class_user.model_name)
   
-  df = class_save_model.return_previous_response(class_user.model_name)
+  # df = class_save_model.return_previous_response(class_user.model_name)
   #print(df)
   
   # header = df.columns.tolist()
   # print(df.values)
   # print(df.values.tolist())
-  column_names = list(df.columns.tolist())
-  row_data = list(df.values.tolist())
-  model_result = [df.values.tolist()]
-  print(model_result)
-
-
-  return render_template("model_result.html", header=header, model_result=model_result) 
+  # column_names = list(df.columns.tolist())
+  # row_data = list(df.values.tolist())
+  # model_result = [df.values.tolist()]
+  print(df)
+  column_names = list(df.columns.values.tolist())
+  row_data = list(df.values.tolist())  
+  #table_html = df.to_html(classes='data', index=False)
+  #return render_template('model_result.html', table=table_html, header=headers)
+  #return render_template('model_result.html', tables=[df.to_html()], titles=[''])
+  #return render_template("model_result.html", tables=[df.to_html(classes='data')], header=header) 
+  return render_template("model_result.html", column_names=column_names, row_data=row_data) 
 
 
 @app.route('/get_csv', methods=['POST'])
 def extract():
     # Create a CSV file from the data
     csv_data = []
-    header = class_run_model.get_model_header()
-    model_result = class_run_model.get_model_result()
+    df = class_run_model.get_model_result()
+    header = df.columns.tolist()
+    model_result = list(df.values.tolist())
     for file in model_result:
       for row in file:
         data_row = []

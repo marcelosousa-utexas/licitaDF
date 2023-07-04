@@ -1,0 +1,21 @@
+{% extends "basic_table.html" %}
+
+      {% block content %}
+            <table id="data" class="table table-striped">
+                    {% for table in tables %}
+                      {{titles[loop.index]}}                         
+                      {{ table|safe }}
+                    {% endfor %}     
+                </h1> 
+            </table>
+        <form action="/get_csv" method="POST">
+          <button type="submit">Extract Table</button>
+        </form>
+      {% endblock %}
+      {% block scripts %}
+        <script>
+          $(document).ready(function () {
+            $('#data').DataTable();
+          });
+        </script>
+      {% endblock %}

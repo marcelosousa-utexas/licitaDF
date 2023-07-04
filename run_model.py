@@ -388,15 +388,20 @@ class classifier_model():
               #output_dict = output_parser.parse(find_classification)
               #print(output_dict)
               #print(type(output_dict))
-              headers_list = list(find_classification.keys()) 
-              data_list = list(find_classification.values())     
-              print("Headers List:", headers_list)
-              print("Data List:", data_list)
-              model_result_each_file.append(data_list)
+              # headers_list = list(find_classification.keys()) 
+              # data_list = list(find_classification.values())     
+              # print("Headers List:", headers_list)
+              # print("Data List:", data_list)
+              model_result_each_file.append(find_classification)
+        # model_result.append(model_result_each_file) 
+        # model_header = headers_list
+        # self.set_model_result(model_result)
+        # self.set_model_header(model_header)
+        df = pd.DataFrame(model_result_each_file)
         model_result.append(model_result_each_file) 
-        model_header = headers_list
-        self.set_model_result(model_result)
-        self.set_model_header(model_header)
+        #model_header = headers_list
+        self.set_model_result(df)
+        #self.set_model_header(df.columns.tolist())
     
       elif fileType == 'json':
 
@@ -421,7 +426,7 @@ class classifier_model():
                             #if tipo is not None and tipo != "Ineditorial":
                             if tipo is not None and (tipo == "Aviso" or tipo == "Pregão"):
 
-                                if titulo is not None and re.search(regex_licitacao, titulo.upper()) is None:
+                                if titulo is not None and "SRP" in titulo and re.search(regex_licitacao, titulo.upper()) is None:
                                     # if re.search(regex_licitacao, titulo) is not None:
                                     coDemandante = section_3[orgao][documento][ato]['coDemandante']
                                     #titulo = html.unescape(titulo)
@@ -484,7 +489,7 @@ class classifier_model():
             #df_atos_licitacao = pd.DataFrame(atos_licitacao)
             filtered_df = pd.DataFrame(df_atos_licitacao)
             print(filtered_df)
-            print(filtered_df.head(5).texto.iloc[3])  
+            #print(filtered_df.head(5).texto.iloc[3])  
       
             for index, row in filtered_df.iterrows():
       
@@ -511,25 +516,26 @@ class classifier_model():
                     #output_dict = output_parser.parse(find_classification)
                     #print(output_dict)
                     #print(type(output_dict))
-                    find_classification['orgao'] = orgao
-                    find_classification['titulo'] = titulo
-                    find_classification['numero_dodf'] = numero_dodf            
-                    find_classification['coMateria'] = coMateria                     
-                    headers_list = list(find_classification.keys()) 
-                    data_list = list(find_classification.values())     
-                    print("Headers List:", headers_list)
-                    print("Data List:", data_list)
-                    model_result_each_file.append(data_list)
-            model_result.append(model_result_each_file)
-            model_header = headers_list
-            self.set_model_result(model_result)
-            self.set_model_header(model_header)        
+                    # find_classification['orgao'] = orgao
+                    # find_classification['titulo'] = titulo
+                    # find_classification['numero_dodf'] = numero_dodf            
+                    # find_classification['coMateria'] = coMateria                     
+                    # headers_list = list(find_classification.keys()) 
+                    # data_list = list(find_classification.values())     
+                    # print("Headers List:", headers_list)
+                    # print("Data List:", data_list)
+                    # model_result_each_file.append(data_list)
+                    model_result_each_file.append(find_classification)
+            # model_result.append(model_result_each_file)
+            # model_header = headers_list
+            # self.set_model_result(model_result)
+            # self.set_model_header(model_header)    
+            df = pd.DataFrame(model_result_each_file)
+            model_result.append(model_result_each_file)    
+            self.set_model_result(df)
         except KeyError:
             print(f"Chave 'Seção III' não encontrada no DODF {data['lstJornalDia']}!")        
 
-
-
-      
       
       #data = [['16', 4, 0.832574, 'ok', 0.95689666, 'ok'], ['17', 4, 0.7490662, 'ok', 0.9434082, 'ok'], ['18', 3, 0.7548005, 'ok', 0.88454604, 'ok']]
       

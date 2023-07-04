@@ -1,0 +1,25 @@
+{% extends "basic_table.html" %}
+
+      {% block content %}
+        <table id="data" class="table table-striped">
+        <thead>
+          <tr>
+              {% for column_name in header %}
+                  <th>{{ column_name }}</th>
+              {% endfor %}  
+        </thead>
+        <tbody>
+            {{ table|safe }}
+        </tbody>
+        </table>
+        <form action="/get_csv" method="POST">
+          <button type="submit">Extract Table</button>
+        </form>
+      {% endblock %}
+      {% block scripts %}
+        <script>
+          $(document).ready(function () {
+            $('#data').DataTable();
+          });
+        </script>
+      {% endblock %}
