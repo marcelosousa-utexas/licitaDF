@@ -146,7 +146,8 @@ def n_parameters():
       modelName = request.form['modelName']
       class_user.model_name = modelName
       
-      numClass = request.form['numClass']
+      #numClass = request.form['numClass']
+      numClass = 1
       #print(numClass)
       numParams = request.form['numParams']
       #numParams = 1
@@ -199,6 +200,8 @@ def store_user_parameter():
 
 @app.route('/upload_file_type', methods=['POST'])
 def upload_file_type():
+    # class_user.reset_files()
+    # class_user.set_type("")
     return render_template("upload_file_type.html")
       
 
@@ -208,16 +211,17 @@ def upload():
       fileType = request.form.get('file_type')
       print(fileType)
       singleMultipleClassif = request.form.get('single_multiple_class')
+      class_file_io.set_file_type(fileType)
+      class_file_io.set_single_multiple_class(singleMultipleClassif)      
       if fileType == 'plain_text':
         return render_template("text_message_box.html")
       
       else:
 
-        print(fileType)
-        print(singleMultipleClassif)
+        #print(fileType)
+        #print(singleMultipleClassif)
 
-        class_file_io.set_file_type(fileType)
-        class_file_io.set_single_multiple_class(singleMultipleClassif)
+
   
   
         #class_file_io.switch_file_type.get(fileType, class_file_io.process_unknown_file_type)()
@@ -269,11 +273,11 @@ def upload_plain_text():
       #class_user.set_type(file_ext)
       #class_user.add_file(full_file_path)
       #if not class_user.get_type():
-      class_user.set_type(file_ext)
+      #class_user.set_type(file_ext)
       #if not class_user.update_file_if_existis(full_file_path):
       class_user.reset_files()
       class_user.add_file(full_file_path)      
-      
+    
       # Return a response to the client
       return redirect(url_for('model_result'))
   
@@ -297,12 +301,12 @@ def model_result():
 
 
   data_schema = class_save_model.load(class_user.model_name)
-    
+  class_user  
 
   class_run_model.set_model_parameters(class_user.get_files(), data_schema)
   class_run_model.start_classifier_model(class_file_io.get_file_type(), class_file_io.get_single_multiple_class())
   df = class_run_model.get_model_result()
-  headers = df.columns.tolist()
+  #headers = df.columns.tolist()
   row_data = list(df.values.tolist())
   print(row_data)
   # print(model_result)
@@ -327,6 +331,8 @@ def model_result():
   #return render_template('model_result.html', table=table_html, header=headers)
   #return render_template('model_result.html', tables=[df.to_html()], titles=[''])
   #return render_template("model_result.html", tables=[df.to_html(classes='data')], header=header) 
+  class_user.reset_files()
+  class_user.set_type("")
   return render_template("model_result.html", column_names=column_names, row_data=row_data) 
 
 

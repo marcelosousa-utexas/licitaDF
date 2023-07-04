@@ -353,10 +353,11 @@ class classifier_model():
     df = pd.DataFrame()
     model_result = []
     headers_list = []
-    df_atos_licitacao = []
+
     
     for each_file in self.files:
-    
+      
+      df_atos_licitacao = []
       class_data = file_io(each_file)
       #data = class_data.dispatch_filetype()
       print(fileType)
@@ -364,7 +365,7 @@ class classifier_model():
       data = class_data.switch_file_type.get(fileType, class_data.process_unknown_file_type)()
       #class_file_io.switch_single_multiple_class.get(singleMultipleClassif, class_file_io.process_unknown_classif)()      
 
-      if fileType == 'txt':
+      if fileType == 'plain_text':
       #data = normalize('NFKD', data).encode('ASCII','ignore').decode('ASCII')
 
         data = re.split(chr(12), data)
