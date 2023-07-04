@@ -205,6 +205,7 @@ def upload_file_type():
 def upload():
     if request.form:
       fileType = request.form.get('file_type')
+      print(fileType)
       singleMultipleClassif = request.form.get('single_multiple_class')
       if fileType == 'plain_text':
         return render_template("text_message_box.html")
@@ -261,13 +262,13 @@ def upload_plain_text():
       
       
       # Write the text to a file on the server
-      if os.path.exists(full_file_path) == False:
-        with open(full_file_path, 'w') as file:
-            file.write(text)
+      #if os.path.exists(full_file_path) == False:
+      with open(full_file_path, 'w') as file:
+        file.write(text)
       #class_user.set_type(file_ext)
       #class_user.add_file(full_file_path)
-      if not class_user.get_type():
-        class_user.set_type(file_ext)
+      #if not class_user.get_type():
+      class_user.set_type(file_ext)
       #if not class_user.update_file_if_existis(full_file_path):
       class_user.reset_files()
       class_user.add_file(full_file_path)      

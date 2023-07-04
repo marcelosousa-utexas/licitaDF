@@ -10,7 +10,7 @@ class file_io():
     self.single_multiple_class= "single_classif"
 
     self.switch_file_type = {
-        "plain_text": self.process_plain_text,
+        "txt": self.process_plain_text,
         "json": self.process_json_file,
         "pdf_OCR": self.process_searchable_pdf,
         "pdf": self.process_non_searchable_pdf

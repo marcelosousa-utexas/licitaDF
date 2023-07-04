@@ -352,20 +352,21 @@ class classifier_model():
         
     
     model_result = []
+    headers_list = []
     df_atos_licitacao = []
     
     for each_file in self.files:
     
       class_data = file_io(each_file)
       #data = class_data.dispatch_filetype()
+      print(fileType)
 
       data = class_data.switch_file_type.get(fileType, class_data.process_unknown_file_type)()
-      
       #class_file_io.switch_single_multiple_class.get(singleMultipleClassif, class_file_io.process_unknown_classif)()      
       model_result_each_file = []
-
-      if fileType == 'plain_text':
+      if fileType == 'txt':
       #data = normalize('NFKD', data).encode('ASCII','ignore').decode('ASCII')
+
         data = re.split(chr(12), data)
   
         for index, page in enumerate(data):
@@ -399,132 +400,133 @@ class classifier_model():
     
       elif fileType == 'json':
 
-            regex_licitacao = r'(?:NOTIFICA[CÇ][ÃAOÕ][EO][S]?|VENCEDOR|SUSPENS[AÃ]O|REVOGA[ÇC][AÃ]O|TERMO|RESULTADO|DISPENSA|INEXIGIBILIDADE|JULGAMENTO|AUDI[EÊ]NCIA\s+P[ÚU]BLICA|SUPRIMENTO|HOMOLOGA[CÇ][AÃ]O|ADJUDICA[CÇ][AÃ]O|ADIAMENTO|CONVOCA[CÇ][AÃ]O|AQUISI[CÇ][AÃ]O|LICEN[CÇ]A|RECURSO|ANULAÇÃO|CANCELAMENTO|COOPERAÇÃO|APRESENTAÇÃO|DISCUSSÃO|AQUISIÇÕES|CLASSIFICAÇÃO|CONSULTA\s+PÚBLICA|DESCLASSIFICAÇÃO|LEILÃO|IMPUGNAÇÃO|FRACASSADA|DESERTA|PRORROGAÇÃO|AUTORIZAÇÃO|COMUNICADO|INTIMAÇÃO|IMÓVEIS|COMPRAS|RESCISÃO|CONTRATO|EXTRATO|PUBLICIDADE|SUSPENÇÃO|FORNECEDOR|LICENCIAMENTO|VENDEDORES)'
+        regex_licitacao = r'(?:NOTIFICA[CÇ][ÃAOÕ][EO][S]?|VENCEDOR|SUSPENS[AÃ]O|REVOGA[ÇC][AÃ]O|TERMO|RESULTADO|DISPENSA|INEXIGIBILIDADE|JULGAMENTO|AUDI[EÊ]NCIA\s+P[ÚU]BLICA|SUPRIMENTO|HOMOLOGA[CÇ][AÃ]O|ADJUDICA[CÇ][AÃ]O|ADIAMENTO|CONVOCA[CÇ][AÃ]O|AQUISI[CÇ][AÃ]O|LICEN[CÇ]A|RECURSO|ANULAÇÃO|CANCELAMENTO|COOPERAÇÃO|APRESENTAÇÃO|DISCUSSÃO|AQUISIÇÕES|CLASSIFICAÇÃO|CONSULTA\s+PÚBLICA|DESCLASSIFICAÇÃO|LEILÃO|IMPUGNAÇÃO|FRACASSADA|DESERTA|PRORROGAÇÃO|AUTORIZAÇÃO|COMUNICADO|INTIMAÇÃO|IMÓVEIS|COMPRAS|RESCISÃO|CONTRATO|EXTRATO|PUBLICIDADE|SUSPENÇÃO|FORNECEDOR|LICENCIAMENTO|VENDEDORES)'
 
 
-            try:
-                lstHierarquia = data['json']['lstHierarquia']['lstDemandantes']
-                hierarchy = data['json']['lstHierarquia']['hierarquia']
-                # print(hierarchy)
+        try:
+            lstHierarquia = data['json']['lstHierarquia']['lstDemandantes']
+            hierarchy = data['json']['lstHierarquia']['hierarquia']
+            # print(hierarchy)
 
-                if 'Seção III' in data['json']['INFO']:
-                    section_3 = data['json']['INFO']['Seção III']
-                    for orgao in section_3:
-                        for documento in section_3[orgao]:
-                            for ato in section_3[orgao][documento]:
+            if 'Seção III' in data['json']['INFO']:
+                section_3 = data['json']['INFO']['Seção III']
+                for orgao in section_3:
+                    for documento in section_3[orgao]:
+                        for ato in section_3[orgao][documento]:
 
-                                titulo = section_3[orgao][documento][ato]['titulo']
-                                tipo = section_3[orgao][documento][ato]['tipo']
-
-
-                                #if tipo is not None and tipo != "Ineditorial":
-                                if tipo is not None and (tipo == "Aviso" or tipo == "Pregão"):
-
-                                    if titulo is not None and re.search(regex_licitacao, titulo.upper()) is None:
-                                        # if re.search(regex_licitacao, titulo) is not None:
-                                        coDemandante = section_3[orgao][documento][ato]['coDemandante']
-                                        #titulo = html.unescape(titulo)
+                            titulo = section_3[orgao][documento][ato]['titulo']
+                            tipo = section_3[orgao][documento][ato]['tipo']
 
 
+                            #if tipo is not None and tipo != "Ineditorial":
+                            if tipo is not None and (tipo == "Aviso" or tipo == "Pregão"):
 
-                                        #texto_html = section_3[orgao][documento][ato]['texto']
-                                        texto_html = """<p style="text-align:center;">""" + titulo + """</p>""" + section_3[orgao][documento][ato]['texto']
-
-                                        # texto = section_3[orgao][documento][ato]['texto']
-                                        # texto = re.sub(r'<[^>]*>', '',
-                                        #                titulo + " " + section_3[orgao][documento][ato]['texto'])
-                                        # print(texto)
-
-                                        #texto_html = html.unescape(texto_html)
+                                if titulo is not None and re.search(regex_licitacao, titulo.upper()) is None:
+                                    # if re.search(regex_licitacao, titulo) is not None:
+                                    coDemandante = section_3[orgao][documento][ato]['coDemandante']
+                                    #titulo = html.unescape(titulo)
 
 
-                                        texto = re.sub(r'<[^>]*>', ' ', str(titulo) + section_3[orgao][documento][ato]['texto'])
+
+                                    #texto_html = section_3[orgao][documento][ato]['texto']
+                                    texto_html = """<p style="text-align:center;">""" + titulo + """</p>""" + section_3[orgao][documento][ato]['texto']
+
+                                    # texto = section_3[orgao][documento][ato]['texto']
+                                    # texto = re.sub(r'<[^>]*>', '',
+                                    #                titulo + " " + section_3[orgao][documento][ato]['texto'])
+                                    # print(texto)
+
+                                    #texto_html = html.unescape(texto_html)
 
 
-                                        # texto = section_3[orgao][documento][ato]['texto']
-                                        # texto = re.sub(r'<[^>]*>', '',
-                                        #                titulo + " " + section_3[orgao][documento][ato]['texto'])
-                                        # print(texto)
-
-                                        #texto = html.unescape(texto)
-
-                                        #texto = section_3[orgao][documento][ato]['texto']
-                                        # print(texto)
-                                        # print(titulo)
-                                        #
-                                        ano = find_dodf_year(data['lstJornalDia'])
-                                        numero_dodf = data['json']['nu_numero'] + "/" + ano
-                                        coMateria = section_3[orgao][documento][ato]["coMateria"]
-
-                                        # atos_licitacao['titulo'].append(titulo)
-                                        # atos_licitacao['texto'].append(re.sub(r'<[^>]*>', '', titulo + " " + section_3[orgao][documento][ato]['texto']))
-                                        # # res = self.parse_regex(section_3[orgao][documento][ato]['texto'])
-                                        #
-                                        #
-                                        # atos_licitacao['processo'].append('processo')
-                                        # atos_licitacao['numero_licitacao'].append('numero_licitacao')
-                                        # atos_licitacao['modalidade'].append('modalidade')
-
-                                        list_father = find_list_father(coDemandante, hierarchy, lstHierarquia)
-                                        orgao_df = extract_orgao(list_father, lstHierarquia)
-
-                                        atos_licitacao = {
-                                            'numero_dodf': numero_dodf,
-                                            'coMateria': coMateria,
-                                            'tipo': tipo,
-                                            'titulo': titulo,
-                                            'texto': texto,
-                                            'texto_html': texto_html,
-                                            'orgao': orgao_df
-                                        }
-                                        df_atos_licitacao.append(atos_licitacao)
-                                        #print(df_atos_licitacao)
-                                        # print(re.sub(r'<[^>]*>', '', titulo + " " + section_3[orgao][documento][ato]['texto']))
-                #df_atos_licitacao = pd.DataFrame(atos_licitacao)
-            except KeyError:
-                print(f"Chave 'Seção III' não encontrada no DODF {data['lstJornalDia']}!")        
-      filtered_df = pd.DataFrame(df_atos_licitacao)
-      print(filtered_df)
-      print(filtered_df.head(5).texto.iloc[3])  
-
-      for index, row in filtered_df.iterrows():
-
-          # contador_empty_data = 0
-          # contador = contador + 1
-          json_data = ""
-          #idx = index
+                                    texto = re.sub(r'<[^>]*>', ' ', str(titulo) + section_3[orgao][documento][ato]['texto'])
 
 
-          question = row['texto']
-          orgao = row['orgao']
-          titulo = row['titulo']
-          numero_dodf = row['numero_dodf']
-          idx = row['coMateria']
-               
-          messages = prompt.format_messages(text=question,
-                                                  format_instructions=format_instructions)
-          question = messages[0].content
+                                    # texto = section_3[orgao][documento][ato]['texto']
+                                    # texto = re.sub(r'<[^>]*>', '',
+                                    #                titulo + " " + section_3[orgao][documento][ato]['texto'])
+                                    # print(texto)
 
-          #print(question)
+                                    #texto = html.unescape(texto)
 
-          find_classification = asyncio.run(query(question)) 
-          if bool(find_classification) and isinstance(find_classification, dict):            
-              #output_dict = output_parser.parse(find_classification)
-              #print(output_dict)
-              #print(type(output_dict))
-              find_classification['orgao'] = orgao
-              find_classification['titulo'] = titulo
-              find_classification['numero_dodf'] = numero_dodf            
-              find_classification['coMateria'] = coMateria                     
-              headers_list = list(find_classification.keys()) 
-              data_list = list(find_classification.values())     
-              print("Headers List:", headers_list)
-              print("Data List:", data_list)
-              model_result_each_file.append(data_list)
-      model_result.append(model_result_each_file)
-      model_header = headers_list
-      self.set_model_result(model_result)
-      self.set_model_header(model_header)
+                                    #texto = section_3[orgao][documento][ato]['texto']
+                                    # print(texto)
+                                    # print(titulo)
+                                    #
+                                    ano = find_dodf_year(data['lstJornalDia'])
+                                    numero_dodf = data['json']['nu_numero'] + "/" + ano
+                                    coMateria = section_3[orgao][documento][ato]["coMateria"]
+
+                                    # atos_licitacao['titulo'].append(titulo)
+                                    # atos_licitacao['texto'].append(re.sub(r'<[^>]*>', '', titulo + " " + section_3[orgao][documento][ato]['texto']))
+                                    # # res = self.parse_regex(section_3[orgao][documento][ato]['texto'])
+                                    #
+                                    #
+                                    # atos_licitacao['processo'].append('processo')
+                                    # atos_licitacao['numero_licitacao'].append('numero_licitacao')
+                                    # atos_licitacao['modalidade'].append('modalidade')
+
+                                    list_father = find_list_father(coDemandante, hierarchy, lstHierarquia)
+                                    orgao_df = extract_orgao(list_father, lstHierarquia)
+
+                                    atos_licitacao = {
+                                        'numero_dodf': numero_dodf,
+                                        'coMateria': coMateria,
+                                        'tipo': tipo,
+                                        'titulo': titulo,
+                                        'texto': texto,
+                                        'texto_html': texto_html,
+                                        'orgao': orgao_df
+                                    }
+                                    df_atos_licitacao.append(atos_licitacao)
+                                    #print(df_atos_licitacao)
+                                    # print(re.sub(r'<[^>]*>', '', titulo + " " + section_3[orgao][documento][ato]['texto']))
+            #df_atos_licitacao = pd.DataFrame(atos_licitacao)
+            filtered_df = pd.DataFrame(df_atos_licitacao)
+            print(filtered_df)
+            print(filtered_df.head(5).texto.iloc[3])  
+      
+            for index, row in filtered_df.iterrows():
+      
+                # contador_empty_data = 0
+                # contador = contador + 1
+                json_data = ""
+                #idx = index
+      
+      
+                question = row['texto']
+                orgao = row['orgao']
+                titulo = row['titulo']
+                numero_dodf = row['numero_dodf']
+                idx = row['coMateria']
+                     
+                messages = prompt.format_messages(text=question,
+                                                        format_instructions=format_instructions)
+                question = messages[0].content
+      
+                #print(question)
+      
+                find_classification = asyncio.run(query(question)) 
+                if bool(find_classification) and isinstance(find_classification, dict):            
+                    #output_dict = output_parser.parse(find_classification)
+                    #print(output_dict)
+                    #print(type(output_dict))
+                    find_classification['orgao'] = orgao
+                    find_classification['titulo'] = titulo
+                    find_classification['numero_dodf'] = numero_dodf            
+                    find_classification['coMateria'] = coMateria                     
+                    headers_list = list(find_classification.keys()) 
+                    data_list = list(find_classification.values())     
+                    print("Headers List:", headers_list)
+                    print("Data List:", data_list)
+                    model_result_each_file.append(data_list)
+            model_result.append(model_result_each_file)
+            model_header = headers_list
+            self.set_model_result(model_result)
+            self.set_model_header(model_header)        
+        except KeyError:
+            print(f"Chave 'Seção III' não encontrada no DODF {data['lstJornalDia']}!")        
+
 
 
       
