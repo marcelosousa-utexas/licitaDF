@@ -350,7 +350,7 @@ class classifier_model():
     prompt_template = ChatPromptTemplate.from_template(template)
     prompt = ChatPromptTemplate.from_template(template=template)
         
-    
+    df = pd.DataFrame()
     model_result = []
     headers_list = []
     df_atos_licitacao = []
@@ -363,7 +363,7 @@ class classifier_model():
 
       data = class_data.switch_file_type.get(fileType, class_data.process_unknown_file_type)()
       #class_file_io.switch_single_multiple_class.get(singleMultipleClassif, class_file_io.process_unknown_classif)()      
-      model_result_each_file = []
+
       if fileType == 'txt':
       #data = normalize('NFKD', data).encode('ASCII','ignore').decode('ASCII')
 
@@ -392,16 +392,12 @@ class classifier_model():
               # data_list = list(find_classification.values())     
               # print("Headers List:", headers_list)
               # print("Data List:", data_list)
-              model_result_each_file.append(find_classification)
+              model_result.append(find_classification)
         # model_result.append(model_result_each_file) 
         # model_header = headers_list
         # self.set_model_result(model_result)
         # self.set_model_header(model_header)
-        df = pd.DataFrame(model_result_each_file)
-        model_result.append(model_result_each_file) 
-        #model_header = headers_list
-        self.set_model_result(df)
-        #self.set_model_header(df.columns.tolist())
+
     
       elif fileType == 'json':
 
@@ -525,18 +521,23 @@ class classifier_model():
                     # print("Headers List:", headers_list)
                     # print("Data List:", data_list)
                     # model_result_each_file.append(data_list)
-                    model_result_each_file.append(find_classification)
+                    model_result.append(find_classification)
             # model_result.append(model_result_each_file)
             # model_header = headers_list
             # self.set_model_result(model_result)
             # self.set_model_header(model_header)    
-            df = pd.DataFrame(model_result_each_file)
-            model_result.append(model_result_each_file)    
-            self.set_model_result(df)
+            #df = pd.DataFrame(model_result_each_file)
+            #model_result.append(model_result_each_file)    
+            #self.set_model_result(df)
         except KeyError:
             print(f"Chave 'Seção III' não encontrada no DODF {data['lstJornalDia']}!")        
 
-      
+    df = pd.DataFrame(model_result)
+      #df_completo = pd.concat([df, df_temp], axis=0, ignore_index=False)
+      #model_result.append(model_result_each_file) 
+      #model_header = headers_list
+    self.set_model_result(df)
+      #self.set_model_header(df.columns.tolist())
       #data = [['16', 4, 0.832574, 'ok', 0.95689666, 'ok'], ['17', 4, 0.7490662, 'ok', 0.9434082, 'ok'], ['18', 3, 0.7548005, 'ok', 0.88454604, 'ok']]
       
       #data_dict = [dict(zip(['col1', 'col2', 'col3', 'col4', 'col5', 'col6'], row)) for row in model_result]
