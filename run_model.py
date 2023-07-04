@@ -423,7 +423,9 @@ class classifier_model():
                             #if tipo is not None and tipo != "Ineditorial":
                             if tipo is not None and (tipo == "Aviso" or tipo == "Pregão"):
 
-                                if titulo is not None and "SRP" in titulo and re.search(regex_licitacao, titulo.upper()) is None:
+                                # if titulo is not None and "SRP" in titulo and re.search(regex_licitacao, titulo.upper()) is None:
+                                if titulo is not None and re.search(regex_licitacao, titulo.upper()) is None:
+                                  
                                     # if re.search(regex_licitacao, titulo) is not None:
                                     coDemandante = section_3[orgao][documento][ato]['coDemandante']
                                     #titulo = html.unescape(titulo)
