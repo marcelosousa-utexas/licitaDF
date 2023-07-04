@@ -46,6 +46,19 @@ class build_model():
     model = Models(name = modelname, pathLocation = disk.get_model_absolute_path(modelname) , userName = "Marcelo", date = datetime.utcnow())
     class_db.saveData(model)
 
+  def save_pickle2(self, object, modelname):
+    self.write_to_disk(object, modelname + '_result', ".pkl")
+    #write to database
+    #class_model = Models()
+    class_db = Database()
+    class_db.create_from_pandas(modelname + '_result', object)
+
+
+  def return_previous_response(self, modelname):
+    class_db = Database()
+    df = class_db.get_previous_results(modelname + '_result')
+    return df
+
   
   def save_all(self, modelname):
     self.write_to_disk(self.dictionary, modelname, ".dict")

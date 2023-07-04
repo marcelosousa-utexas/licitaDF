@@ -1,6 +1,8 @@
 import os
 import io
 import pandas as pd
+import hashlib
+
 #import nltk
 #import pickle
 from flask import Flask, render_template, request, flash, make_response, jsonify, redirect, url_for
@@ -20,7 +22,7 @@ FILE_DIR = os.path.normpath(disk.PUBLIC_FOLDER + disk.FILE_FOLDER)
 app = Flask(__name__ , static_folder=os.environ['STATIC_FOLDER'])
 app.secret_key = os.environ['SECRET_KEY']
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
-app.config['UPLOAD_EXTENSIONS'] = ['.pdf', '.txt']
+app.config['UPLOAD_EXTENSIONS'] = ['.pdf', '.json', '.txt']
 app.config['UPLOAD_PATH'] = FILE_DIR
 
 
@@ -181,10 +183,10 @@ def store_user_parameter():
 
     print(data_matrix)
 
-    #df = pd.DataFrame(data_matrix)
+    df = pd.DataFrame(data_matrix)
     class_par.set_data_matrix(data_matrix)
     
-    class_save_model.save_pickle(data_matrix, class_user.model_name)
+    class_save_model.save_pickle(df, class_user.model_name)
     #class_save_model.build_all_models(class_par.get_data_matrix())
     #class_save_model.save_all(class_user.model_name)
 
@@ -208,7 +210,7 @@ def upload():
         return render_template("text_message_box.html")
       
       else:
-          
+
         print(fileType)
         print(singleMultipleClassif)
 
@@ -250,16 +252,25 @@ def upload_plain_text():
 
     if request.form:
       text = request.form['scroll-box']
-      print(text)
-      filename = 'plain_text.txt'
+      md5 = hashlib.md5()
+      md5.update(text.encode('utf-8'))
+      filename = md5.hexdigest() + '.txt'
+      #filename = 'plain_text.txt'
       file_ext = os.path.splitext(filename)[1]
       full_file_path = os.path.join(app.config['UPLOAD_PATH'], filename)
-
+      
+      
       # Write the text to a file on the server
-      with open(full_file_path, 'w') as file:
-          file.write(text)
-      class_user.set_type(file_ext)
-      class_user.add_file(full_file_path)
+      if os.path.exists(full_file_path) == False:
+        with open(full_file_path, 'w') as file:
+            file.write(text)
+      #class_user.set_type(file_ext)
+      #class_user.add_file(full_file_path)
+      if not class_user.get_type():
+        class_user.set_type(file_ext)
+      #if not class_user.update_file_if_existis(full_file_path):
+      class_user.reset_files()
+      class_user.add_file(full_file_path)      
       
       # Return a response to the client
       return redirect(url_for('model_result'))
@@ -290,6 +301,23 @@ def model_result():
   class_run_model.start_classifier_model(class_file_io.get_file_type(), class_file_io.get_single_multiple_class())
   model_result = class_run_model.get_model_result()
   header = class_run_model.get_model_header()
+  print(model_result)
+  print(header)
+
+  df = pd.DataFrame(model_result, columns=header)
+  class_save_model.save_pickle2(df, class_user.model_name)
+  
+  df = class_save_model.return_previous_response(class_user.model_name)
+  #print(df)
+  
+  # header = df.columns.tolist()
+  # print(df.values)
+  # print(df.values.tolist())
+  column_names = list(df.columns.tolist())
+  row_data = list(df.values.tolist())
+  model_result = [df.values.tolist()]
+  print(model_result)
+
 
   return render_template("model_result.html", header=header, model_result=model_result) 
 

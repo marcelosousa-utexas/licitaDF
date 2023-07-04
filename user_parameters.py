@@ -17,6 +17,9 @@ class user():
   def add_file(self, fullpath):
     self.files.append(fullpath)
 
+  def reset_files(self):
+    self.files = [] 
+
   def get_files(self):
     return self.files
 

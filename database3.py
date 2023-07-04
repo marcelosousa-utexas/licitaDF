@@ -5,6 +5,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import sqlalchemy as db
 from models import Models
+from sqlalchemy import text
+import pandas as pd
 
 class Database():
     # replace the user, password, hostname and database according to your configuration according to your information
@@ -95,7 +97,46 @@ class Database():
         session.add(object)
         session.commit()
 
+    def create_from_pandas(self, table_name, df):
 
+        df.to_sql(table_name, con=self.engine, if_exists='append', index=False)
+        
+        
+        """
+        if_exists: {'fail', 'replace', 'append'}, default 'fail'
+             fail: If table exists, do nothing.
+             replace: If table exists, drop it, recreate it, and insert data.
+             append: If table exists, insert data. Create if does not exist.
+        """
+
+    def get_previous_results(self, table_name):
+
+
+        # SQLAlchemy connectable
+        conn = self.engine.connect()
+         
+        # table named 'employee' will be returned as a dataframe.
+        df = pd.read_sql_table(table_name, conn)
+        print(df)      
+        # # establish the connection with the engine object
+        # with self.engine.connect() as conn:
+        #     # execute the SQL query "SELECT * FROM loan_data"
+        #     result = conn.execute(text("SELECT * FROM " + table_name))
+
+          
+        #     # Fetch all the records from the result object
+        #     print(result)
+        #     records = result.fetchall()
+
+        #     print(records)
+        #     # Get the column names from the result object
+        #     column_names = result.keys()
+    
+        #     # Create a pandas DataFrame from the fetched records and column names
+        #     df = pd.DataFrame(records, columns=column_names)
+    
+        return df
+        
     # engine = db.create_engine(db_connection_string, connect_args = connection_ssl_arg)
     # def __init__(self):
     #     #self.connection = self.engine.connect()

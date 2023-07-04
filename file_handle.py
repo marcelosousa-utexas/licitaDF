@@ -1,5 +1,5 @@
 import os
-
+import json
 
 
 class file_io():
@@ -11,7 +11,7 @@ class file_io():
 
     self.switch_file_type = {
         "plain_text": self.process_plain_text,
-        "txt": self.process_text_file,
+        "json": self.process_json_file,
         "pdf_OCR": self.process_searchable_pdf,
         "pdf": self.process_non_searchable_pdf
     }
@@ -59,10 +59,10 @@ class file_io():
       return data    
   
   
-  def process_text_file(self):
-      print("Processing text file...")
-      with open(self.file_full_path, encoding="utf8") as txt_file:
-        data = txt_file.read()
+  def process_json_file(self):
+      print("Processing json file...")
+      with open(self.file_full_path, 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
       return data
 
   

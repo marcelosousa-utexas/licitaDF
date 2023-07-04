@@ -4,6 +4,7 @@ from datetime import datetime
 
 Base = declarative_base()
 
+
 class Jobs(Base):
     __tablename__ = "jobs"
 
