@@ -337,8 +337,7 @@ def extract():
     df = class_run_model.get_model_result()
     header = df.columns.tolist()
     model_result = list(df.values.tolist())
-    for file in model_result:
-      for row in file:
+    for row in model_result:
         data_row = []
         for cell in row:
           data_row.append(cell)
