@@ -485,7 +485,50 @@ class classifier_model():
                 print(f"Chave 'Seção III' não encontrada no DODF {data['lstJornalDia']}!")        
       filtered_df = pd.DataFrame(df_atos_licitacao)
       print(filtered_df)
-      print(filtered_df.head(5).texto.iloc[3])    
+      print(filtered_df.head(5).texto.iloc[3])  
+
+      for index, row in filtered_df.iterrows():
+
+          # contador_empty_data = 0
+          # contador = contador + 1
+          json_data = ""
+          #idx = index
+
+
+          question = row['texto']
+          orgao = row['orgao']
+          titulo = row['titulo']
+          numero_dodf = row['numero_dodf']
+          idx = row['coMateria']
+               
+          messages = prompt.format_messages(text=question,
+                                                  format_instructions=format_instructions)
+          question = messages[0].content
+
+          #print(question)
+
+          find_classification = asyncio.run(query(question)) 
+          if bool(find_classification) and isinstance(find_classification, dict):            
+              #output_dict = output_parser.parse(find_classification)
+              #print(output_dict)
+              #print(type(output_dict))
+              find_classification['orgao'] = orgao
+              find_classification['titulo'] = titulo
+              find_classification['numero_dodf'] = numero_dodf            
+              find_classification['coMateria'] = coMateria                     
+              headers_list = list(find_classification.keys()) 
+              data_list = list(find_classification.values())     
+              print("Headers List:", headers_list)
+              print("Data List:", data_list)
+              model_result_each_file.append(data_list)
+      model_result.append(model_result_each_file)
+      model_header = headers_list
+      self.set_model_result(model_result)
+      self.set_model_header(model_header)
+
+
+      
+      
       #data = [['16', 4, 0.832574, 'ok', 0.95689666, 'ok'], ['17', 4, 0.7490662, 'ok', 0.9434082, 'ok'], ['18', 3, 0.7548005, 'ok', 0.88454604, 'ok']]
       
       #data_dict = [dict(zip(['col1', 'col2', 'col3', 'col4', 'col5', 'col6'], row)) for row in model_result]

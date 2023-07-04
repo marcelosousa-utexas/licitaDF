@@ -8,4 +8,5 @@ scipy==1.9.3
 smart-open==6.3.0
 gensim==4.3.1
 langchain==0.0.221
+EdgeGPT==0.11.0
 gunicorn
